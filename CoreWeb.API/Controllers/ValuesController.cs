@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DatingApp.API.Controllers
+namespace CoreWeb.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
