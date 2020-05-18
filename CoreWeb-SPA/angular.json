@@ -119,6 +119,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "CoreWeb-SPA"
+    }
+  },
+  "defaultProject": "CoreWeb-SPA",
+  "cli": {
+    "analytics": false
+  }
 }
