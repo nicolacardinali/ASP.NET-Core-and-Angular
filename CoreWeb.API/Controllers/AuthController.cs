@@ -1,8 +1,12 @@
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using CoreWeb.API.Data;
 using CoreWeb.API.Dtos;
 using CoreWeb.API.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CoreWeb.API.Controllers
 {
@@ -11,9 +15,11 @@ namespace CoreWeb.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthRepository _repo;
-        public AuthController(IAuthRepository repo)
+        private readonly IConfiguration _config;
+        public AuthController(IAuthRepository repo, IConfiguration config)
 
         {
+            this._config = config;
             this._repo = repo;
         }
 
@@ -46,7 +52,13 @@ namespace CoreWeb.API.Controllers
             if (userFromRepo == null)
                 return Unauthorized();
 
-            
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
+                new Claim(ClaimTypes.Name, userFromRepo.Username)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("Appsettings:Token").Value));
         }
 
     }
