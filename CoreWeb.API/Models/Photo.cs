@@ -9,5 +9,7 @@ namespace CoreWeb.API.Models
         public string Description { get; set; }
         public DateTime DateAdded { get; set; }
         public bool IsMain { get; set; }
+        public User user { get; set; }
+        public int UserId { get; set; }
     }
 }
