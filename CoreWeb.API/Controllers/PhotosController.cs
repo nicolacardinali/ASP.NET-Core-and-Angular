@@ -40,6 +40,59 @@ namespace CoreWeb.API.Controllers
             _cloudinary = new Cloudinary(acc); // Nuova istanza di cloudinary con i dati dell'account
         }
 
-       
+        [HttpPost]
+        public async Task<IActionResult> AddPhotoForUser(int userId, PhotoForCreationDto photoForCreationDto)
+        {
+            // Compare the userId against the route parameter of userId
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return Unauthorized();
+
+            var userFromRepo = await _repo.GetUser(userId); // Utente
+
+
+            var file = photoForCreationDto.File; // Image to be uploaded
+
+            var uploadResult = new ImageUploadResult(); // Store the result of the upload
+
+            if (file.Length > 0)
+            {
+                using (var stream = file.OpenReadStream())
+                {
+
+                    var uploadParams = new ImageUploadParams()
+                    {
+                        File = new FileDescription(file.Name, stream),
+                        Transformation = new Transformation().Width(500).Height(500).Crop("fill").Gravity("face")
+                    };
+                    // Transformation, finds the face of the person and cut the image 500px x 500px
+
+                    uploadResult = _cloudinary.Upload(uploadParams); // Do upload and the response comes back in uploadResult var
+                }
+            }
+
+            // Writes the results back to photoForCreationDto
+            photoForCreationDto.Url = uploadResult.Url.ToString();
+            photoForCreationDto.PublicID = uploadResult.PublicId;
+
+            // Map the Dto data into Photo
+            var photo = _mapper.Map<Photo>(photoForCreationDto);
+
+            // Add the photo to the user
+            if (!userFromRepo.Photos.Any(u => u.IsMain))
+                photo.IsMain = true;
+
+            userFromRepo.Photos.Add(photo);
+
+            // Save
+            if (await _repo.SaveAll())
+            {
+                // Save OK
+                return Ok(); // Cheat
+            }
+
+            // Save KO
+            return BadRequest("Could not add the photo");
+
+        }
     }
 }
