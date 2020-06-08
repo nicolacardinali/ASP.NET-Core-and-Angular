@@ -40,6 +40,15 @@ namespace CoreWeb.API.Controllers
             _cloudinary = new Cloudinary(acc); // Nuova istanza di cloudinary con i dati dell'account
         }
 
+        [HttpGet("{id}", Name = "GetPhoto")]
+        public async Task<IActionResult> GetPhoto(int id)
+        {
+            var photoFromRepo = await _repo.GetPhoto(id);
+            var photo = _mapper.Map<PhotoForReturnDto>(photoFromRepo);
+            return Ok(photo);
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> AddPhotoForUser(int userId, PhotoForCreationDto photoForCreationDto)
         {
@@ -83,11 +92,13 @@ namespace CoreWeb.API.Controllers
 
             userFromRepo.Photos.Add(photo);
 
+
             // Save
             if (await _repo.SaveAll())
             {
+                var photoToReturn = _mapper.Map<PhotoForReturnDto>(photo);
                 // Save OK
-                return Ok(); // Cheat
+                return CreatedAtRoute("GetPhoto", new { userId = userId, id = photo.Id }, photoToReturn);
             }
 
             // Save KO
