@@ -50,7 +50,7 @@ namespace CoreWeb.API.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> AddPhotoForUser(int userId, PhotoForCreationDto photoForCreationDto)
+        public async Task<IActionResult> AddPhotoForUser(int userId, [FromForm]PhotoForCreationDto photoForCreationDto)
         {
             // Compare the userId against the route parameter of userId
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
