@@ -1,8 +1,8 @@
 using System;
 
-namespace CoreWeb.API.Models
+namespace CoreWeb.API.Dtos
 {
-    public class Photo
+    public class PhotoForReturnDto
     {
         public int Id { get; set; }
         public string Url { get; set; }
@@ -10,7 +10,5 @@ namespace CoreWeb.API.Models
         public DateTime DateAdded { get; set; }
         public bool IsMain { get; set; }
         public string PublicID { get; set; }
-        public User User { get; set; }
-        public int UserId { get; set; }
     }
 }
